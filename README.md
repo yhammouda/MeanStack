@@ -1,1 +1,1 @@
-# MeanStack
+# MeanStack Project
