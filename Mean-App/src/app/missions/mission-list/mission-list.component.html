@@ -17,11 +17,11 @@
           color="accent"
           aria-label="Example icon button with a plus one icon"
         >
-          <mat-icon (click)="onCreateMission()">plus_one</mat-icon>
+          <mat-icon (click)="onCreateTransaction()">plus_one</mat-icon>
         </button>
 
-        <button mat-button color="warn" (click)="onCreateMission()">
-          Create Mission
+        <button mat-button color="warn" (click)="onCreateTransaction()">
+          Add Transaction
         </button>
       </div>
       <div style="float: right">
@@ -97,8 +97,8 @@
   </mat-expansion-panel>
 </mat-accordion>
 <mat-paginator
-  [length]="totalPosts"
-  [pageSize]="postsPerPage"
+  [length]="totalMissions"
+  [pageSize]="missionPerPage"
   [pageSizeOptions]="pageSizeOptions"
   (page)="onChangedPage($event)"
   *ngIf="missions.length > 0"

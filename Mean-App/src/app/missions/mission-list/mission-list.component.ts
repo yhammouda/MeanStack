@@ -3,18 +3,17 @@ import { PageEvent } from "@angular/material";
 import { Subscription } from "rxjs";
 
 import { Mission } from "../mission.model"
-import { PostsService } from "../missions.service";
 import { AuthService } from "../../auth/auth.service";
 import { MatDialog } from "@angular/material";
-import { MissionCreateComponent } from "../mission-create/mission-create.component";
-
+import { TransactionCreateComponent } from "../transaction-create/transaction-create.component";
+import { MissionsService } from "../missions.service";
 @Component({
   selector: "app-mission-list",
   templateUrl: "./mission-list.component.html",
   styleUrls: ["./mission-list.component.css"]
 })
 export class MissionListComponent implements OnInit, OnDestroy {
- missions = [
+ /*missions = [
   {
     "id": "xyz-dsdsd",
     "title": "This is the title",
@@ -41,36 +40,35 @@ export class MissionListComponent implements OnInit, OnDestroy {
       }
     ]
   }
- ];
+ ];*/
  displayedColumns: string[] = ['id', 'date', 'typeOfFees', 'label','image','edit'];
-  //posts: Mission[] = [];
+  missions: Mission[] = [];
   isLoading = false;
-  totalPosts = 0;
-  postsPerPage = 2;
+  totalMissions = 0;
+  missionPerPage = 2;
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
   userIsAuthenticated = false;
   userId: string;
-  private postsSub: Subscription;
+  private missionsSub: Subscription;
   private authStatusSub: Subscription;
 
   constructor(
     private dialog: MatDialog,
-    public postsService: PostsService,
+    public missionsService: MissionsService,
     private authService: AuthService
   ) {}
 
   ngOnInit() {
-  /*
     this.isLoading = true;
-    this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    this.missionsService.getMissions(this.missionPerPage, this.currentPage);
     this.userId = this.authService.getUserId();
-    this.postsSub = this.postsService
-      .getPostUpdateListener()
-      .subscribe((postData: { posts: Mission[]; postCount: number }) => {
+    this.missionsSub = this.missionsService
+      .getMissionpdateListener()
+      .subscribe((postData: { missions: Mission[]; missionCount: number }) => {
         this.isLoading = false;
-        this.totalPosts = postData.postCount;
-        this.posts = postData.posts;
+        this.totalMissions = postData.missionCount;
+        this.missions = postData.missions;
       });
     this.userIsAuthenticated = this.authService.getIsAuth();
     this.authStatusSub = this.authService
@@ -79,7 +77,6 @@ export class MissionListComponent implements OnInit, OnDestroy {
         this.userIsAuthenticated = isAuthenticated;
         this.userId = this.authService.getUserId();
       });
-      */
   }
 
   onChangedPage(pageData: PageEvent) {
@@ -102,8 +99,8 @@ export class MissionListComponent implements OnInit, OnDestroy {
     });
     */
   }
-  onCreateMission(){
-    this.dialog.open(MissionCreateComponent, {data: {message: "Mission under Creation"}});
+  onCreateTransaction(){
+    this.dialog.open(TransactionCreateComponent, {data: {message: "Mission under Creation"}});
   }
   ngOnDestroy() {
     /*

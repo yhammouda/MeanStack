@@ -28,6 +28,7 @@ import { AuthInterceptor } from "./auth/auth-interceptor";
 import { ErrorInterceptor } from "./error-interceptor";
 import { ErrorComponent } from "./error/error.component";
 import { MissionListComponent } from "./missions/mission-list/mission-list.component";
+import { TransactionCreateComponent } from "./missions/transaction-create/transaction-create.component";
 import { MissionCreateComponent } from "./missions/mission-create/mission-create.component";
 
 @NgModule({
@@ -36,6 +37,7 @@ import { MissionCreateComponent } from "./missions/mission-create/mission-create
     PostCreateComponent,
     HeaderComponent,
     MissionCreateComponent,
+    TransactionCreateComponent,
     PostListComponent,
     MissionListComponent,
     LoginComponent,
@@ -66,6 +68,6 @@ import { MissionCreateComponent } from "./missions/mission-create/mission-create
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ErrorComponent,MissionCreateComponent]
+  entryComponents: [ErrorComponent,TransactionCreateComponent]
 })
 export class AppModule {}

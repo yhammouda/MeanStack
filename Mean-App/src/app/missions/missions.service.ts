@@ -7,11 +7,63 @@ import { Router } from "@angular/router";
 import { Mission } from "./mission.model";
 
 @Injectable({ providedIn: "root" })
-export class PostsService {
-  private posts: Mission[] = [];
-  private postsUpdated = new Subject<{ posts: Mission[]; postCount: number }>();
+export class MissionsService {
+  private missions: Mission[] = [];
+  private missionsUpdated = new Subject<{ missions: Mission[]; missionCount: number }>();
 
   constructor(private http: HttpClient, private router: Router) {}
+
+
+  addMission(title: string) {
+    const postData = new FormData();
+    postData.append("title", title);
+    postData.append("status", 'Pending Approval');
+
+    this.http
+      .post<{ message: string; mission: Mission }>(
+        "http://localhost:3000/api/missions",
+        postData
+      )
+      .subscribe(responseData => {
+        console.log('response');
+        console.log(responseData);
+        this.router.navigate(["/missions"]);
+      });
+  }
+
+  getMissions(missionsPerPage: number, currentPage: number) {
+    const queryParams = `?pagesize=${missionsPerPage}&page=${currentPage}`;
+    this.http
+      .get<{ message: string; missions: any; maxMissions: number }>(
+        "http://localhost:3000/api/missions" + queryParams
+      )
+      .pipe(
+        map(postData => {
+          return {
+            missions: postData.missions.map(post => {
+              return {
+                title: post.title,
+                content: post.content,
+                id: post._id,
+                creator: post.creator,
+                transactions: post.transactions
+              };
+            }),
+            maxMissions: postData.maxMissions
+          };
+        })
+      )
+      .subscribe(transformedPostData => {
+        this.missions = transformedPostData.missions;
+        this.missionsUpdated.next({
+          missions: [...this.missions],
+          missionCount: transformedPostData.maxMissions
+        });
+      });
+  }
+  getMissionpdateListener() {
+    return this.missionsUpdated.asObservable();
+  }
 /*
   getPosts(postsPerPage: number, currentPage: number) {
     const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
@@ -58,20 +110,7 @@ export class PostsService {
     }>("http://localhost:3000/api/posts/" + id);
   }
 
-  addPost(title: string, content: string, image: File) {
-    const postData = new FormData();
-    postData.append("title", title);
-    postData.append("content", content);
-    postData.append("image", image, title);
-    this.http
-      .post<{ message: string; post: Post }>(
-        "http://localhost:3000/api/posts",
-        postData
-      )
-      .subscribe(responseData => {
-        this.router.navigate(["/posts"]);
-      });
-  }
+
 
   updatePost(id: string, title: string, content: string, image: File | string) {
     let postData: Post | FormData;

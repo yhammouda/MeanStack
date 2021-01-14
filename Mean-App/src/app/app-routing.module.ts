@@ -7,6 +7,7 @@ import { LoginComponent } from "./auth/login/login.component";
 import { SignupComponent } from "./auth/signup/signup.component";
 import { AuthGuard } from "./auth/auth.guard";
 import { MissionListComponent } from "./missions/mission-list/mission-list.component";
+import { MissionCreateComponent } from "./missions/mission-create/mission-create.component";
 
 const routes: Routes = [
   { path: "", component: LoginComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: "edit/:postId", component: PostCreateComponent, canActivate: [AuthGuard] },
   { path: "posts", component: PostListComponent, canActivate: [AuthGuard]  },
   { path: "missions", component: MissionListComponent, canActivate: [AuthGuard]  },
+  { path: "createmission", component: MissionCreateComponent, canActivate: [AuthGuard]  },
   { path: "signup", component: SignupComponent },
 ];
 

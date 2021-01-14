@@ -13,6 +13,11 @@
         >New Post</a
       >
     </li>
+    <li *ngIf="userIsAuthenticated">
+      <a mat-button routerLink="/createmission" routerLinkActive="mat-accent"
+        >New Mission</a
+      >
+    </li>
     <li *ngIf="!userIsAuthenticated">
       <a mat-button routerLink="/" >Login</a>
     </li>
