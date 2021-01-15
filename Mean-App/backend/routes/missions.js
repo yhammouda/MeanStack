@@ -59,10 +59,12 @@ router.post(
   }
 );
 
-router.get("", (req, res, next) => {
+router.get("", checkAuth, (req, res, next) => {
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
-  const postQuery = Mission.find();
+
+  console.log(req.userData);
+  const postQuery = Mission.find({creator: req.userData.userId })
   let fetchedPosts;
   if (pageSize && currentPage) {
     postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
