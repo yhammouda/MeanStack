@@ -52,6 +52,7 @@ export class MissionListComponent implements OnInit, OnDestroy {
   userId: string;
   private missionsSub: Subscription;
   private authStatusSub: Subscription;
+  private showDialogSub: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -62,10 +63,21 @@ export class MissionListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isLoading = true;
     this.missionsService.getMissions(this.missionPerPage, this.currentPage);
+
+    this.showDialogSub = this.missionsService.getDialogUpdateListener().subscribe(showDialog =>{
+      if(!showDialog){
+        this.dialog.closeAll();
+      }
+    });
+
     this.userId = this.authService.getUserId();
     this.missionsSub = this.missionsService
-      .getMissionpdateListener()
+      .getMissionUpdateListener()
       .subscribe((postData: { missions: Mission[]; missionCount: number }) => {
+
+        console.log('missions');
+        console.log(postData.missions);
+
         this.isLoading = false;
         this.totalMissions = postData.missionCount;
         this.missions = postData.missions;
@@ -80,12 +92,10 @@ export class MissionListComponent implements OnInit, OnDestroy {
   }
 
   onChangedPage(pageData: PageEvent) {
-    /*
     this.isLoading = true;
     this.currentPage = pageData.pageIndex + 1;
-    this.postsPerPage = pageData.pageSize;
-    this.postsService.getPosts(this.postsPerPage, this.currentPage);
-    */
+    this.missionPerPage = pageData.pageSize;
+    this.missionsService.getMissions(this.missionPerPage, this.currentPage);
   }
 
   onDelete(postId: string) {
@@ -99,13 +109,11 @@ export class MissionListComponent implements OnInit, OnDestroy {
     });
     */
   }
-  onCreateTransaction(){
-    this.dialog.open(TransactionCreateComponent, {data: {message: "Mission under Creation"}});
+  onCreateTransaction(missionId: string){
+    this.dialog.open(TransactionCreateComponent, {data: {missionId: missionId }});
   }
   ngOnDestroy() {
-    /*
-    this.postsSub.unsubscribe();
+    this.missionsSub.unsubscribe();
     this.authStatusSub.unsubscribe();
-    */
   }
 }

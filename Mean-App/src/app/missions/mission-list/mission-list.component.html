@@ -17,10 +17,10 @@
           color="accent"
           aria-label="Example icon button with a plus one icon"
         >
-          <mat-icon (click)="onCreateTransaction()">plus_one</mat-icon>
+          <mat-icon (click)="onCreateTransaction(post.id)">plus_one</mat-icon>
         </button>
 
-        <button mat-button color="warn" (click)="onCreateTransaction()">
+        <button mat-button color="warn" (click)="onCreateTransaction(post.id)">
           Add Transaction
         </button>
       </div>

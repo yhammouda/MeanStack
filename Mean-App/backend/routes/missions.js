@@ -3,13 +3,14 @@ const multer = require("multer");
 
 const Mission = require("../models/mission");
 const checkAuth = require("../middleware/check-auth");
+const mission = require("../models/mission");
 
 const router = express.Router();
 
 const MIME_TYPE_MAP = {
   "image/png": "png",
   "image/jpeg": "jpg",
-  "image/jpg": "jpg"
+  "image/jpg": "jpg",
 };
 
 const storage = multer.diskStorage({
@@ -22,13 +23,10 @@ const storage = multer.diskStorage({
     cb(error, "backend/images");
   },
   filename: (req, file, cb) => {
-    const name = file.originalname
-      .toLowerCase()
-      .split(" ")
-      .join("-");
+    const name = file.originalname.toLowerCase().split(" ").join("-");
     const ext = MIME_TYPE_MAP[file.mimetype];
     cb(null, name + "-" + Date.now() + "." + ext);
-  }
+  },
 });
 
 router.post(
@@ -36,38 +34,32 @@ router.post(
   checkAuth,
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
-    console.log(req.body);
     const post = new Mission({
       title: req.body.title,
       status: req.body.status,
       creator: req.userData.userId,
-      transactions : []
+      transactions: [],
     });
-
-    console.log(post);
     post
       .save()
-      .then(createdPost => {
-        console.log(createdPost);
+      .then((createdPost) => {
         res.status(201).json({
           message: "Post added successfully",
           post: {
             ...createdPost,
-            id: createdPost._id
-          }
+            id: createdPost._id,
+          },
         });
       })
-      .catch(error => {
-        console.log(error)
+      .catch((error) => {
         res.status(500).json({
-          message: "Creating a post failed!"
+          message: "Creating a post failed!",
         });
       });
   }
 );
 
 router.get("", (req, res, next) => {
-  console.log('fsdfsdfsdfsdfsdfdsf')
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
   const postQuery = Mission.find();
@@ -76,57 +68,74 @@ router.get("", (req, res, next) => {
     postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
   postQuery
-    .then(documents => {
+    .then((documents) => {
       fetchedPosts = documents;
       return Mission.count();
     })
-    .then(count => {
+    .then((count) => {
       res.status(200).json({
         message: "Posts fetched successfully!",
         missions: fetchedPosts,
-        maxMissions: count
+        maxMissions: count,
       });
     })
-    .catch(error => {
-      console.log(error)
+    .catch((error) => {
       res.status(500).json({
-        message: "Fetching posts failed!"
+        message: "Fetching posts failed!",
       });
     });
 });
 
-/*
 router.post(
-  "",
+  "/addTransaction",
   checkAuth,
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
     const url = req.protocol + "://" + req.get("host");
-    const post = new Post({
-      title: req.body.title,
-      content: req.body.content,
-      imagePath: url + "/images/" + req.file.filename,
-      creator: req.userData.userId
+    const imagePath = url + "/images/" + req.file.filename;
+
+    Mission.findById(req.body.id).then((mission) => {
+      if (mission) {
+        const newTransaction = JSON.parse(req.body.transaction);
+        newTransaction.imagePath = imagePath;
+
+        const transactions = mission.transactions;
+        transactions.push(newTransaction);
+
+        const post = new Mission({
+          _id: req.body.id,
+          title: mission.title,
+          status: mission.status,
+          imagePath: imagePath,
+          creator: req.userData.userId,
+          transactions: transactions,
+        });
+
+        Mission.updateOne(
+          { _id: req.body.id, creator: req.userData.userId },
+          post
+        )
+          .then((result) => {
+            console.log(result);
+            if (result.nModified > 0) {
+              res.status(200).json({ message: "Update successful!" });
+            } else {
+              res.status(401).json({ message: "Not authorized!" });
+            }
+          })
+          .catch((error) => {
+            res.status(500).json({
+              message: "Couldn't udpate post!",
+            });
+          });
+      } else {
+        res.status(404).json({ message: "Post not found!" });
+      }
     });
-    post
-      .save()
-      .then(createdPost => {
-        res.status(201).json({
-          message: "Post added successfully",
-          post: {
-            ...createdPost,
-            id: createdPost._id
-          }
-        });
-      })
-      .catch(error => {
-        res.status(500).json({
-          message: "Creating a post failed!"
-        });
-      });
   }
 );
 
+/*
 router.put(
   "/:id",
   checkAuth,
@@ -159,33 +168,6 @@ router.put(
       });
   }
 );
-
-router.get("", (req, res, next) => {
-  const pageSize = +req.query.pagesize;
-  const currentPage = +req.query.page;
-  const postQuery = Post.find();
-  let fetchedPosts;
-  if (pageSize && currentPage) {
-    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
-  }
-  postQuery
-    .then(documents => {
-      fetchedPosts = documents;
-      return Post.count();
-    })
-    .then(count => {
-      res.status(200).json({
-        message: "Posts fetched successfully!",
-        posts: fetchedPosts,
-        maxPosts: count
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        message: "Fetching posts failed!"
-      });
-    });
-});
 
 router.get("/:id", (req, res, next) => {
   Post.findById(req.params.id)
