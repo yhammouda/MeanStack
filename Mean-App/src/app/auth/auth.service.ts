@@ -31,8 +31,8 @@ export class AuthService {
     return this.authStatusListener.asObservable();
   }
 
-  createUser(email: string, password: string) {
-    const authData: AuthData = { email: email, password: password };
+  createUser(email: string, password: string,firstname:string,lastname:string) {
+    const authData: AuthData = { email: email, password: password,firstname:firstname, lastname:lastname };
     this.http
       .post("http://localhost:3000/api/user/signup", authData)
       .subscribe(() => {
@@ -43,9 +43,9 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
-    const authData: AuthData = { email: email, password: password };
+    const authData: AuthData = { email: email, password: password,firstname: '', lastname: '' } ;
     this.http
-      .post<{ token: string; expiresIn: number; userId: string }>(
+      .post<{ token: string; expiresIn: number; userId: string,firstname:string,lastname:string }>(
         "http://localhost:3000/api/user/login",
         authData
       )
@@ -63,7 +63,7 @@ export class AuthService {
             now.getTime() + expiresInDuration * 1000
           );
           console.log(expirationDate);
-          this.saveAuthData(token, expirationDate, this.userId);
+          this.saveAuthData(token, expirationDate, this.userId,response.firstname,response.lastname);
           this.router.navigate(["/posts"]);
         }
       }, error => {
@@ -104,16 +104,20 @@ export class AuthService {
     }, duration * 1000);
   }
 
-  private saveAuthData(token: string, expirationDate: Date, userId: string) {
+  private saveAuthData(token: string, expirationDate: Date, userId: string,firstname:string,lastname:string) {
     localStorage.setItem("token", token);
     localStorage.setItem("expiration", expirationDate.toISOString());
     localStorage.setItem("userId", userId);
+    localStorage.setItem("firstname", firstname);
+    localStorage.setItem("lastname", lastname);
   }
 
   private clearAuthData() {
     localStorage.removeItem("token");
     localStorage.removeItem("expiration");
     localStorage.removeItem("userId");
+    localStorage.removeItem("firstname");
+    localStorage.removeItem("lastname");
   }
 
   private getAuthData() {
