@@ -4,6 +4,7 @@ export interface Mission {
   creator: string;
   transactions: Transaction[];
   status: string;
+  totalAmount:number;
 }
 
 

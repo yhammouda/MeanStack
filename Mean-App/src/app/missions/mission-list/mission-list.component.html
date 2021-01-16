@@ -1,6 +1,6 @@
 <mat-spinner *ngIf="isLoading"></mat-spinner>
 <mat-accordion multi="true" *ngIf="missions.length > 0 && !isLoading">
-  <mat-expansion-panel *ngFor="let post of missions">
+  <mat-expansion-panel *ngFor="let post of missions" [expanded]="true">
     <mat-expansion-panel-header >
       <span class="missiontitle">{{ post.title }}</span>
     </mat-expansion-panel-header>
@@ -11,8 +11,9 @@
     <p>{{ post.content }}</p>
     -->
     <div style="width: 100%; text-align: center; margin-bottom: 4em">
-      <div style="float: left">
+      <div style="float: left;width: 33%;">
         <button
+        style="float: left;"
           mat-mini-fab
           color="accent"
           aria-label="Example icon button with a plus one icon"
@@ -20,14 +21,17 @@
           <mat-icon (click)="onCreateTransaction(post.id)">plus_one</mat-icon>
         </button>
 
-        <button mat-button color="warn" (click)="onCreateTransaction(post.id)">
+        <button   style="float: left;" mat-button color="warn" (click)="onCreateTransaction(post.id)">
           Add Transaction
         </button>
       </div>
-      <div style="float: right">
-        <span style="color: #ff4081; font-size: medium; font-weight: bold"
-          >hello</span
-        >
+      <div style ="float:left;width: 33%">
+        <span style="color:cyan; font-size: medium; font-weight: bold">{{post.status}} </span>
+      </div>
+
+      <div style="float: left;width: 33%">
+        <span style="color: #ff4081; font-size: medium; font-weight: bold">Total Amount in USD :  </span>
+        <span style="color: blueviolet; font-size: medium; font-weight: bold">{{post.totalAmount}}</span>
       </div>
     </div>
     <table

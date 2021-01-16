@@ -13,35 +13,35 @@ import { MissionsService } from "../missions.service";
   styleUrls: ["./mission-list.component.css"]
 })
 export class MissionListComponent implements OnInit, OnDestroy {
- /*missions = [
-  {
-    "id": "xyz-dsdsd",
-    "title": "This is the title",
-    "status": "pending approval",
-    "creator": "1",
-    "transactions": [
-      {
-        "id": "guid-guid",
-        "date": "2019-01-01",
-        "typeOfFees": "Excess transactions",
-        "label": "coffee",
-        "transactionType": "cash",
-        "amount": 20,
-        "imagePath": "http://localhost:3000/images/uuuugfdgdf-1610546324774.jpg"
-      },
-      {
-        "id": "another-guid",
-        "date": "2019-05-05",
-        "typeOfFees": "commissions",
-        "label": "coffee",
-        "transactionType": "cash",
-        "amount": 5,
-        "imagePath": "http://localhost:3000/images/uuuugfdgdf-1610546324774.jpg"
-      }
-    ]
-  }
- ];*/
- displayedColumns: string[] = ['label','amount' ,'typeOfFees', 'date', 'transactionType','image','edit'];
+  /*missions = [
+   {
+     "id": "xyz-dsdsd",
+     "title": "This is the title",
+     "status": "pending approval",
+     "creator": "1",
+     "transactions": [
+       {
+         "id": "guid-guid",
+         "date": "2019-01-01",
+         "typeOfFees": "Excess transactions",
+         "label": "coffee",
+         "transactionType": "cash",
+         "amount": 20,
+         "imagePath": "http://localhost:3000/images/uuuugfdgdf-1610546324774.jpg"
+       },
+       {
+         "id": "another-guid",
+         "date": "2019-05-05",
+         "typeOfFees": "commissions",
+         "label": "coffee",
+         "transactionType": "cash",
+         "amount": 5,
+         "imagePath": "http://localhost:3000/images/uuuugfdgdf-1610546324774.jpg"
+       }
+     ]
+   }
+  ];*/
+  displayedColumns: string[] = ['label', 'amount', 'typeOfFees', 'date', 'transactionType', 'image', 'edit'];
   missions: Mission[] = [];
   isLoading = false;
   totalMissions = 0;
@@ -58,14 +58,14 @@ export class MissionListComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     public missionsService: MissionsService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.isLoading = true;
     this.missionsService.getMissions(this.missionPerPage, this.currentPage);
 
-    this.showDialogSub = this.missionsService.getDialogUpdateListener().subscribe(showDialog =>{
-      if(!showDialog){
+    this.showDialogSub = this.missionsService.getDialogUpdateListener().subscribe(showDialog => {
+      if (!showDialog) {
         this.dialog.closeAll();
       }
     });
@@ -74,10 +74,11 @@ export class MissionListComponent implements OnInit, OnDestroy {
     this.missionsSub = this.missionsService
       .getMissionUpdateListener()
       .subscribe((postData: { missions: Mission[]; missionCount: number }) => {
-        this.calculateTotalAmount(postData.missions[0].transactions);
         this.isLoading = false;
         this.totalMissions = postData.missionCount;
+        this.calculateAmountForMissions(postData.missions);
         this.missions = postData.missions;
+        console.log(this.missions)
       });
     this.userIsAuthenticated = this.authService.getIsAuth();
     this.authStatusSub = this.authService
@@ -87,15 +88,24 @@ export class MissionListComponent implements OnInit, OnDestroy {
         this.userId = this.authService.getUserId();
       });
   }
+  calculateAmountForMissions(missions: Mission[]) {
+    var i;
+    var totalAmount = 0;
+    for (i = 0; i < missions.length; i++) {
+      totalAmount = 0;
+      if(missions[i].transactions){
+        totalAmount = this.calculateTotalAmountPerMission(missions[i].transactions)
+        missions[i].totalAmount = totalAmount;
+      }
+    }
+  }
 
-  calculateTotalAmount(transactions: Transaction[]){
+  calculateTotalAmountPerMission(transactions: Transaction[]) {
     var totalAmount = 0;
     var i;
     for (i = 0; i < transactions.length; i++) {
       totalAmount += transactions[i].amount;
     }
-
-    console.log(totalAmount);
     return totalAmount;
   }
 
@@ -108,8 +118,8 @@ export class MissionListComponent implements OnInit, OnDestroy {
 
   onDeleteMission(missionId: string) {
     this.isLoading = true;
-    this.missionsService.deleteMission(missionId,null).subscribe(() => {
-    this.missionsService.getMissions(this.missionPerPage, this.currentPage);
+    this.missionsService.deleteMission(missionId, null).subscribe(() => {
+      this.missionsService.getMissions(this.missionPerPage, this.currentPage);
     }, () => {
       this.isLoading = false;
     });
@@ -117,18 +127,18 @@ export class MissionListComponent implements OnInit, OnDestroy {
 
   onDeleteTransaction(missionId: string, transactionId: string) {
     this.isLoading = true;
-    this.missionsService.deleteMission(missionId,transactionId).subscribe(() => {
-    this.missionsService.getMissions(this.missionPerPage, this.currentPage);
+    this.missionsService.deleteMission(missionId, transactionId).subscribe(() => {
+      this.missionsService.getMissions(this.missionPerPage, this.currentPage);
     }, () => {
       this.isLoading = false;
     });
   }
 
-  onCreateTransaction(missionId: string){
-    this.dialog.open(TransactionCreateComponent, {data: {missionId: missionId }});
+  onCreateTransaction(missionId: string) {
+    this.dialog.open(TransactionCreateComponent, { data: { missionId: missionId } });
   }
-  onUpdateTransaction(missionId: string,transactionId:string){
-    this.dialog.open(TransactionCreateComponent, {data: {missionId: missionId,transactionId: transactionId}});
+  onUpdateTransaction(missionId: string, transactionId: string) {
+    this.dialog.open(TransactionCreateComponent, { data: { missionId: missionId, transactionId: transactionId } });
   }
 
   ngOnDestroy() {
