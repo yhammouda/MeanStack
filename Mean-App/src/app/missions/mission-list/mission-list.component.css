@@ -2,7 +2,10 @@
   display: block;
   margin-top: 1rem;
 }
-
+.missiontitle{
+  font-size: large;
+  font-weight: bold;
+}
 mat-spinner {
   margin: auto;
 }

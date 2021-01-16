@@ -44,7 +44,7 @@ router.post(
       .save()
       .then((createdPost) => {
         res.status(201).json({
-          message: "Post added successfully",
+          message: "Mission added successfully",
           post: {
             ...createdPost,
             id: createdPost._id,
@@ -53,7 +53,7 @@ router.post(
       })
       .catch((error) => {
         res.status(500).json({
-          message: "Creating a post failed!",
+          message: "Creating a mission failed!",
         });
       });
   }
@@ -62,9 +62,7 @@ router.post(
 router.get("", checkAuth, (req, res, next) => {
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
-
-  console.log(req.userData);
-  const postQuery = Mission.find({creator: req.userData.userId })
+  const postQuery = Mission.find({ creator: req.userData.userId });
   let fetchedPosts;
   if (pageSize && currentPage) {
     postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
@@ -76,14 +74,14 @@ router.get("", checkAuth, (req, res, next) => {
     })
     .then((count) => {
       res.status(200).json({
-        message: "Posts fetched successfully!",
+        message: "Missions fetched successfully!",
         missions: fetchedPosts,
         maxMissions: count,
       });
     })
     .catch((error) => {
       res.status(500).json({
-        message: "Fetching posts failed!",
+        message: "Fetching missions failed!",
       });
     });
 });
@@ -93,6 +91,7 @@ router.post(
   checkAuth,
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
+
     const url = req.protocol + "://" + req.get("host");
     const imagePath = url + "/images/" + req.file.filename;
 
@@ -116,81 +115,109 @@ router.post(
         Mission.updateOne(
           { _id: req.body.id, creator: req.userData.userId },
           post
-        )
-          .then((result) => {
-            console.log(result);
+        ).then((result) => {
             if (result.nModified > 0) {
-              res.status(200).json({ message: "Update successful!" });
+              res.status(200).json({ message: "Adding transaction successful!" });
             } else {
               res.status(401).json({ message: "Not authorized!" });
             }
           })
           .catch((error) => {
             res.status(500).json({
-              message: "Couldn't udpate post!",
+              message: "Adding transaction failed!",
             });
           });
       } else {
-        res.status(404).json({ message: "Post not found!" });
+        res.status(500).json({ message: "Adding transaction failed!"});
       }
+    }).catch((error) => {
+      res.status(500).json({
+        message: "Adding transaction failed!"
+      });
     });
   }
 );
 
-/*
 router.put(
-  "/:id",
+  "/:idmission/:idtransaction",
   checkAuth,
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
-    let imagePath = req.body.imagePath;
-    if (req.file) {
-      const url = req.protocol + "://" + req.get("host");
-      imagePath = url + "/images/" + req.file.filename;
-    }
-    const post = new Post({
-      _id: req.body.id,
-      title: req.body.title,
-      content: req.body.content,
-      imagePath: imagePath,
-      creator: req.userData.userId
-    });
-    Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, post)
-      .then(result => {
-        if (result.nModified > 0) {
-          res.status(200).json({ message: "Update successful!" });
-        } else {
-          res.status(401).json({ message: "Not authorized!" });
-        }
-      })
-      .catch(error => {
-        res.status(500).json({
-          message: "Couldn't udpate post!"
+
+    Mission.findById(req.params.idmission).then((mission) => {
+      let transaction ={};
+      let imagePath = null;
+      if (req.file) {
+        transaction = JSON.parse(req.body.transaction);
+        const url = req.protocol + "://" + req.get("host");
+        imagePath = url + "/images/" + req.file.filename;
+      }else
+      {
+        transaction = req.body;
+        imagePath = transaction.imagePath;
+      }
+      if (mission) {
+        const transactions = mission.transactions;
+        let transactionToUpdate = transactions.find((obj) => {
+          return obj.id === req.params.idtransaction;
         });
+
+        transactionToUpdate.date = transaction.date;
+        transactionToUpdate.typeOfFees = transaction.typeOfFees;
+        transactionToUpdate.label = transaction.label;
+        transactionToUpdate.amount = transaction.amount;
+        transactionToUpdate.imagePath = imagePath;
+        transactionToUpdate.transactionType = transaction.transactionType;
+
+        Mission.updateOne({ _id: req.params.idmission, creator: req.userData.userId },mission).then((result) => {
+            if (result.nModified > 0) {
+              res.status(200).json({ message: "Transaction update successfully!" });
+            } else {
+              res.status(401).json({ message: "Not authorized!" });
+            }
+          }).catch((error) => {
+            res.status(500).json({
+              message: "Couldn't udpate transaction!",
+            });
+          });
+      }
+      else
+      {
+        res.status(500).json({
+          message: "Couldn't udpate transaction!",
+        });
+      }
+    }).catch((error) => {
+      res.status(500).json({
+        message: "Couldn't udpate transaction!",
       });
+    });
   }
 );
 
-router.get("/:id", (req, res, next) => {
-  Post.findById(req.params.id)
-    .then(post => {
-      if (post) {
-        res.status(200).json(post);
+router.get("/:idmission/:idtransaction", checkAuth,(req, res, next) => {
+  Mission.findById(req.params.idmission)
+    .then(mission => {
+      if (mission) {
+        const transactions = mission.transactions;
+        let transaction = transactions.find((obj) => {
+          return obj.id === req.params.idtransaction;
+        });
+        res.status(200).json(transaction);
       } else {
-        res.status(404).json({ message: "Post not found!" });
+        res.status(404).json({ message: "Transaction not found!" });
       }
     })
     .catch(error => {
       res.status(500).json({
-        message: "Fetching post failed!"
+        message: "Fetching Transaction failed!"
       });
     });
 });
 
-router.delete("/:id", checkAuth, (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId })
+router.delete("/:idmission",checkAuth, (req, res, next) => {
+    Mission.deleteOne({ _id: req.params.idmission, creator: req.userData.userId })
     .then(result => {
-      console.log(result);
       if (result.n > 0) {
         res.status(200).json({ message: "Deletion successful!" });
       } else {
@@ -199,9 +226,46 @@ router.delete("/:id", checkAuth, (req, res, next) => {
     })
     .catch(error => {
       res.status(500).json({
-        message: "Deleting posts failed!"
+        message: "Deleting mission failed!"
       });
     });
 });
-*/
+
+
+router.delete("/:idmission/:idtransaction",checkAuth, (req, res, next) => {
+    Mission.findById(req.params.idmission)
+    .then(mission => {
+      if (mission) {
+
+        const transactions = mission.transactions.filter((obj) => {
+          return obj.id != req.params.idtransaction;
+        });
+
+        mission.transactions = transactions;
+
+        Mission.updateOne({ _id: req.params.idmission, creator: req.userData.userId },mission).then((result) => {
+          if (result.nModified > 0) {
+            res.status(200).json({ message: "Deletion successful!" });
+          } else {
+            res.status(401).json({ message: "Not authorized!" });
+          }
+        }).catch((error) => {
+          console.log(error)
+          res.status(500).json({
+            message: "Deleting transaction failed!"
+          });
+        });
+
+      } else {
+        res.status(404).json({ message: "Deleting transaction failed!"});
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json({
+        message: "Deleting transaction failed!"
+      });
+    });
+});
+
 module.exports = router;

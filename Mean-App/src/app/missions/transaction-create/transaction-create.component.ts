@@ -1,11 +1,13 @@
-import { Component, OnInit, OnDestroy,Inject } from "@angular/core";
+import { Component, OnInit, OnDestroy, Inject } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material";
 import { mimeType } from "./mime-type.validator";
-import {ErrorStateMatcher} from '@angular/material/core';
+import { ErrorStateMatcher } from '@angular/material/core';
 import { Transaction } from "../mission.model";
 import { MissionsService } from "../missions.service";
 import { v4 } from "uuid";
+import { NumberValidators } from "./NumberValidators";
+import { transition } from "@angular/animations";
 
 // import { Subscription } from "rxjs";
 
@@ -21,38 +23,68 @@ interface Fees {
   styleUrls: ["./transaction-create.component.css"]
 })
 
-export class TransactionCreateComponent implements OnInit, OnDestroy{
+export class TransactionCreateComponent implements OnInit, OnDestroy {
 
   form: FormGroup;
   isLoading = false;
   imagePreview: string;
-  private mode = "create";
-  private postId: string;
-
   fees: Fees[] = [
-    {name: 'Excess transactions', feesvalue: 'Excess transactions!'},
-    {name: 'commissions', feesvalue: 'commissions!'},
+    { name: 'Excess transactions', feesvalue: 'Excess transactions!' },
+    { name: 'commissions', feesvalue: 'commissions!' },
   ];
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { missionId: string },public missionsService: MissionsService) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { missionId: string, transactionId: null }, public missionsService: MissionsService) { }
+
+
+  stringToDate(_date) {
+    var input = new Date(_date).toLocaleString().split(',')[0];
+    var yourdate = input.split("/").reverse();
+    var tmp = this.fixDate(yourdate[2]);
+    yourdate[2] = this.fixDate(yourdate[1]);
+    yourdate[1] = tmp;
+    return yourdate.join("-");
+  }
+
+  fixDate(x: string) {
+    if (x.length < 2)
+      return "0" + x;
+    else
+      return x;
+  }
 
   ngOnInit() {
     this.form = new FormGroup({
 
-      label: new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
+      label: new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
 
       date: new FormControl(null, { validators: [Validators.required] }),
-      amount: new FormControl(null, { validators: [Validators.pattern("^[0-9]*$"),Validators.required ]}),
 
-      feesControl :new FormControl('', { validators: [Validators.required] }),
+      amount: new FormControl(null, { validators: [Validators.pattern(/^[.\d]+$/), Validators.required] }),
+
+      feesControl: new FormControl('', { validators: [Validators.required] }),
 
       image: new FormControl(null, {
         validators: [Validators.required],
         asyncValidators: [mimeType]
       })
+
     });
-    this.mode = "create";
-    this.postId = null;
+
+    if (Boolean(this.data.transactionId)) {
+      this.isLoading = true;
+      this.missionsService.getTransaction(this.data.missionId, this.data.transactionId).subscribe(postData => {
+        this.isLoading = false;
+        let date = this.stringToDate(postData.date);
+        this.form.setValue({
+          date: date,
+          feesControl: this.fees[this.fees.findIndex(x => x.feesvalue === postData.typeOfFees)],
+          label: postData.label,
+          amount: postData.amount,
+          image: postData.imagePath,
+          //transactionType: postData.transactionType
+        });
+      });
+    }
   }
 
   onImagePicked(event: Event) {
@@ -71,17 +103,19 @@ export class TransactionCreateComponent implements OnInit, OnDestroy{
       return;
     }
     this.isLoading = true;
-    if (this.mode === "create")
-    {
-      const myguid = v4();
-      const missionId = this.data.missionId;
 
-      const transaction : Transaction = {
-        id : myguid,
+    const missionId = this.data.missionId;
+    const transactionId = this.data.transactionId;
+
+    if (!Boolean(transactionId)) {
+      const myguid = v4();
+
+      const transaction: Transaction = {
+        id: myguid,
         date: this.form.value.date,
         typeOfFees: this.form.value.feesControl.feesvalue,
         label: this.form.value.label,
-        amount: parseInt(this.form.value.amount),
+        amount: this.form.value.amount,
         imagePath: '',
         transactionType: 'Cash',
       };
@@ -92,20 +126,27 @@ export class TransactionCreateComponent implements OnInit, OnDestroy{
         transaction
       ).subscribe(responseData => {
         this.isLoading = false;
-        if (responseData.message === 'Update successful!') {
-          this.missionsService.showDialog.next(false);
-          this.missionsService.getMissions(2, 0);
-        }
+        this.missionsService.showDialog.next(false);
+        this.missionsService.getMissions(2, 0);
+
       });
     } else {
-      /*
-      this.postsService.updatePost(
-        this.postId,
-        this.form.value.title,
-        this.form.value.content,
-        this.form.value.image
-      );
-      */
+      const transaction: Transaction = {
+        id: transactionId,
+        date: this.form.value.date,
+        typeOfFees: this.form.value.feesControl.feesvalue,
+        label: this.form.value.label,
+        amount: this.form.value.amount,
+        imagePath: this.form.value.image,
+        transactionType: 'Cash',
+      };
+      this.missionsService.updateTransaction(
+        missionId, transactionId, transaction
+      ).subscribe(responseData => {
+        this.isLoading = false;
+        this.missionsService.showDialog.next(false);
+        this.missionsService.getMissions(2, 0);
+      });
     }
     this.form.reset();
   }

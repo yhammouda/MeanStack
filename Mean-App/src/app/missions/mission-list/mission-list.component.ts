@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { PageEvent } from "@angular/material";
 import { Subscription } from "rxjs";
 
-import { Mission } from "../mission.model"
+import { Mission, Transaction } from "../mission.model"
 import { AuthService } from "../../auth/auth.service";
 import { MatDialog } from "@angular/material";
 import { TransactionCreateComponent } from "../transaction-create/transaction-create.component";
@@ -41,7 +41,7 @@ export class MissionListComponent implements OnInit, OnDestroy {
     ]
   }
  ];*/
- displayedColumns: string[] = ['id', 'date', 'typeOfFees', 'label','image','edit'];
+ displayedColumns: string[] = ['label','amount' ,'typeOfFees', 'date', 'transactionType','image','edit'];
   missions: Mission[] = [];
   isLoading = false;
   totalMissions = 0;
@@ -74,10 +74,7 @@ export class MissionListComponent implements OnInit, OnDestroy {
     this.missionsSub = this.missionsService
       .getMissionUpdateListener()
       .subscribe((postData: { missions: Mission[]; missionCount: number }) => {
-
-        console.log('missions');
-        console.log(postData.missions);
-
+        this.calculateTotalAmount(postData.missions[0].transactions);
         this.isLoading = false;
         this.totalMissions = postData.missionCount;
         this.missions = postData.missions;
@@ -91,6 +88,17 @@ export class MissionListComponent implements OnInit, OnDestroy {
       });
   }
 
+  calculateTotalAmount(transactions: Transaction[]){
+    var totalAmount = 0;
+    var i;
+    for (i = 0; i < transactions.length; i++) {
+      totalAmount += transactions[i].amount;
+    }
+
+    console.log(totalAmount);
+    return totalAmount;
+  }
+
   onChangedPage(pageData: PageEvent) {
     this.isLoading = true;
     this.currentPage = pageData.pageIndex + 1;
@@ -98,20 +106,31 @@ export class MissionListComponent implements OnInit, OnDestroy {
     this.missionsService.getMissions(this.missionPerPage, this.currentPage);
   }
 
-  onDelete(postId: string) {
-    console.log(postId)
-    /*
+  onDeleteMission(missionId: string) {
     this.isLoading = true;
-    this.postsService.deletePost(postId).subscribe(() => {
-      this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    this.missionsService.deleteMission(missionId,null).subscribe(() => {
+    this.missionsService.getMissions(this.missionPerPage, this.currentPage);
     }, () => {
       this.isLoading = false;
     });
-    */
   }
+
+  onDeleteTransaction(missionId: string, transactionId: string) {
+    this.isLoading = true;
+    this.missionsService.deleteMission(missionId,transactionId).subscribe(() => {
+    this.missionsService.getMissions(this.missionPerPage, this.currentPage);
+    }, () => {
+      this.isLoading = false;
+    });
+  }
+
   onCreateTransaction(missionId: string){
     this.dialog.open(TransactionCreateComponent, {data: {missionId: missionId }});
   }
+  onUpdateTransaction(missionId: string,transactionId:string){
+    this.dialog.open(TransactionCreateComponent, {data: {missionId: missionId,transactionId: transactionId}});
+  }
+
   ngOnDestroy() {
     this.missionsSub.unsubscribe();
     this.authStatusSub.unsubscribe();

@@ -13,6 +13,6 @@ export interface Transaction {
   typeOfFees: string; /*drop down list*/
   label: string;
   amount: number;
-  imagePath: string;
+  imagePath: File | string;
   transactionType: string; /*cash or credit or debit*/
 }

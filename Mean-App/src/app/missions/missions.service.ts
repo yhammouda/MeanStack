@@ -9,7 +9,7 @@ import { Mission, Transaction } from "./mission.model";
 @Injectable({ providedIn: "root" })
 export class MissionsService {
   private missions: Mission[] = [];
-  private missionsUpdated = new Subject<{ missions: Mission[]; missionCount: number }>();
+  private missionsUpdated = new Subject<{ missions: Mission[]; missionCount: number ;}>();
   public showDialog = new Subject<boolean>();
 
   constructor(private http: HttpClient, private router: Router) { }
@@ -49,6 +49,23 @@ export class MissionsService {
       )
   }
 
+  updateTransaction(idmission: string, idtransaction: string, transaction: Transaction) {
+    console.log('transaction')
+    console.log(transaction)
+
+    let postData: Transaction | FormData;
+
+    if (typeof transaction.imagePath === "object") {
+      postData = new FormData();
+      postData.append("image", transaction.imagePath, transaction.id);
+      postData.append("transaction", JSON.stringify(transaction));
+    } else {
+      postData = transaction;
+    }
+    return this.http
+      .put<{ message: string }>("http://localhost:3000/api/missions/" + idmission + "/" + idtransaction, postData);
+  }
+
   getMissions(missionsPerPage: number, currentPage: number) {
     const queryParams = `?pagesize=${missionsPerPage}&page=${currentPage}`;
     this.http
@@ -80,6 +97,18 @@ export class MissionsService {
       });
   }
 
+  getTransaction(idmission: string, idtransaction: string) {
+    return this.http.get<Transaction>("http://localhost:3000/api/missions/" + idmission + "/" + idtransaction);
+  }
+  deleteMission(idmission: string, idtransaction: string) {
+    if(!Boolean(idtransaction)){
+      return this.http.delete("http://localhost:3000/api/missions/" + idmission);
+    }
+    else
+    {
+      return this.http.delete("http://localhost:3000/api/missions/" + idmission + "/" + idtransaction);
+    }
+  }
   /*
     getPosts(postsPerPage: number, currentPage: number) {
       const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;

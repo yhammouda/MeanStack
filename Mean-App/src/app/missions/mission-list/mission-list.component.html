@@ -1,8 +1,8 @@
 <mat-spinner *ngIf="isLoading"></mat-spinner>
 <mat-accordion multi="true" *ngIf="missions.length > 0 && !isLoading">
   <mat-expansion-panel *ngFor="let post of missions">
-    <mat-expansion-panel-header>
-      {{ post.title }}
+    <mat-expansion-panel-header >
+      <span class="missiontitle">{{ post.title }}</span>
     </mat-expansion-panel-header>
     <!--
     <div class="post-image">
@@ -10,7 +10,7 @@
     </div>
     <p>{{ post.content }}</p>
     -->
-    <div style="width: 100%; text-align: center;margin-bottom: 4em;">
+    <div style="width: 100%; text-align: center; margin-bottom: 4em">
       <div style="float: left">
         <button
           mat-mini-fab
@@ -25,7 +25,9 @@
         </button>
       </div>
       <div style="float: right">
-        <span style="color: #ff4081; font-size: medium; font-weight: bold;">hello</span>
+        <span style="color: #ff4081; font-size: medium; font-weight: bold"
+          >hello</span
+        >
       </div>
     </div>
     <table
@@ -37,28 +39,36 @@
       <!--- Note that these columns can be defined in any order.
             The actual rendered columns are set as a property on the row definition" -->
 
-      <!-- Position Column -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>No.</th>
-        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
-      </ng-container>
-
-      <!-- Name Column -->
-      <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let element">{{ element.date }}</td>
-      </ng-container>
-
-      <!-- Weight Column -->
+      <!-- label Column -->
       <ng-container matColumnDef="label">
-        <th mat-header-cell *matHeaderCellDef>Weight</th>
+        <th mat-header-cell *matHeaderCellDef>Label</th>
         <td mat-cell *matCellDef="let element">{{ element.label }}</td>
+      </ng-container>
+
+      <!-- label Column -->
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef>Amount</th>
+        <td mat-cell *matCellDef="let element">{{ element.amount }}</td>
       </ng-container>
 
       <!-- Symbol Column -->
       <ng-container matColumnDef="typeOfFees">
-        <th mat-header-cell *matHeaderCellDef>Symbol</th>
+        <th mat-header-cell *matHeaderCellDef>Type Of Fees</th>
         <td mat-cell *matCellDef="let element">{{ element.typeOfFees }}</td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let element">{{ element.date |date }}</td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="transactionType">
+        <th mat-header-cell *matHeaderCellDef>Transaction Type</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.transactionType }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="image">
@@ -73,10 +83,10 @@
       <ng-container matColumnDef="edit">
         <th mat-header-cell *matHeaderCellDef>Edit Mission</th>
         <td mat-cell *matCellDef="let element">
-          <button mat-button color="warn" (click)="onDelete(element.id)">
+          <button mat-button color="primary" (click)="onUpdateTransaction(post.id,element.id)">
             EDIT
           </button>
-          <button mat-button color="primary" (click)="onDelete(element.id)">
+          <button mat-button color="warn" (click)="onDeleteTransaction(post.id,element.id)">
             DELETE
           </button>
         </td>
@@ -87,11 +97,8 @@
     </table>
 
     <mat-action-row *ngIf="userIsAuthenticated && userId === post.creator">
-      <a mat-button color="primary" [routerLink]="['/edit', post.id]"
-        >EDIT MISSION</a
-      >
-      <button mat-button color="warn" (click)="onDelete(post.id)">
-        DELETE
+      <button mat-button color="warn" (click)="onDeleteMission(post.id)">
+        DELETE Mission
       </button>
     </mat-action-row>
   </mat-expansion-panel>
