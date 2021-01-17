@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
 import { Subscription } from "rxjs";
 
 import { AuthService } from "../auth.service";
+import { PasswordStrengthValidator } from "./password-strength.validators";
 
 @Component({
   templateUrl: "./signup.component.html",
@@ -10,9 +11,10 @@ import { AuthService } from "../auth.service";
 })
 export class SignupComponent implements OnInit, OnDestroy {
   isLoading = false;
+  form: FormGroup;
   private authStatusSub: Subscription;
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService,public fb: FormBuilder) {}
 
   ngOnInit() {
     this.authStatusSub = this.authService.getAuthStatusListener().subscribe(
@@ -20,14 +22,20 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       }
     );
+    this.form = this.fb.group({
+      password: ['', [Validators.required, PasswordStrengthValidator]],
+      firstname: ['', [Validators.required]],
+      lastname: ['', [Validators.required]],
+      email: ['', [Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$"),Validators.required]]
+    });
   }
 
-  onSignup(form: NgForm) {
-    if (form.invalid) {
+  onSignup() {
+    if (this.form.invalid) {
       return;
     }
     this.isLoading = true;
-    this.authService.createUser(form.value.email, form.value.password,form.value.firstname,form.value.lastname);
+    this.authService.createUser(this.form.value.email, this.form.value.password,this.form.value.firstname,this.form.value.lastname);
   }
 
   ngOnDestroy() {
