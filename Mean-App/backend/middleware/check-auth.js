@@ -1,3 +1,5 @@
+/*for all request add the userId and the email to the request before pass to the the api*/
+
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {

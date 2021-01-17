@@ -81,6 +81,7 @@ export class MissionsService {
                 content: post.content,
                 id: post._id,
                 creator: post.creator,
+                status:post.status,
                 transactions: post.transactions
               };
             }),

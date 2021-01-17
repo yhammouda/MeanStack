@@ -1,19 +1,24 @@
 <mat-card>
+  <mat-card-title>Signup</mat-card-title>
   <mat-spinner *ngIf="isLoading"></mat-spinner>
   <form [formGroup]="form" (submit)="onSignup()" *ngIf="!isLoading">
     <mat-form-field>
       <input matInput formControlName="email"  type="email" placeholder="E-Mail" >
+      <!--map the email with the email validator in the typescript-->
       <mat-error *ngIf="form.get('email').invalid">Please enter a valid email.</mat-error>
     </mat-form-field>
     <mat-form-field>
+         <!--map the firstname with the firstname validator in the typescript-->
       <input matInput formControlName="firstname"  type="firstname" placeholder="First name" >
       <mat-error *ngIf="form.get('firstname').invalid">Please enter a valid firstname.</mat-error>
     </mat-form-field>
     <mat-form-field>
+         <!--map the lastname with the lastname validator in the typescript-->
       <input matInput formControlName="lastname"  type="lastname" placeholder="Last name">
       <mat-error *ngIf="form.get('lastname').invalid">Please enter a valid lastname.</mat-error>
     </mat-form-field>
     <mat-form-field>
+         <!--map the password with the password validator in the typescript-->
       <input type="password" formControlName="password"  matInput placeholder="Password">
       <mat-error *ngIf="form.get('password').invalid && form.get('password').hasError('required')"> Please enter a valid password. </mat-error>
       <mat-error *ngIf="form.get('password').invalid"> {{form.get('password').errors['passwordStrength']}} </mat-error>

@@ -22,6 +22,9 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       }
     );
+
+    /*set rules for each field => ex required mean that field is mandatory else a message appear on the UI*/
+      /*you can use regex pattern or custom validation as (PasswordStrengthValidator class) */
     this.form = this.fb.group({
       password: ['', [Validators.required, PasswordStrengthValidator]],
       firstname: ['', [Validators.required]],

@@ -1,14 +1,19 @@
 <mat-card>
+  <mat-card-title>Login</mat-card-title>
   <mat-spinner *ngIf="isLoading"></mat-spinner>
+
   <form (submit)="onLogin(loginForm)" #loginForm="ngForm" *ngIf="!isLoading">
     <mat-form-field>
+        <!--mail is a validator for email entries-->
       <input matInput name="email" ngModel type="email" placeholder="E-Mail" #emailInput="ngModel" required email>
       <mat-error *ngIf="emailInput.invalid">Please enter a valid email.</mat-error>
     </mat-form-field>
     <mat-form-field>
+       <!--required attribute in angular mean that is mandatory -->
       <input type="password" name="password" ngModel matInput placeholder="Password" #passwordInput="ngModel" required>
       <mat-error *ngIf="passwordInput.invalid">Please enter a valid password.</mat-error>
     </mat-form-field>
+    <!--button submit -->
     <button mat-raised-button color="accent" type="submit" *ngIf="!isLoading">Login</button>
   </form>
 </mat-card>

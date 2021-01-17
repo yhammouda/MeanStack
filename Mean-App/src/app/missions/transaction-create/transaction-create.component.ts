@@ -2,16 +2,10 @@ import { Component, OnInit, OnDestroy, Inject } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material";
 import { mimeType } from "./mime-type.validator";
-import { ErrorStateMatcher } from '@angular/material/core';
 import { Transaction } from "../mission.model";
 import { MissionsService } from "../missions.service";
 import { v4 } from "uuid";
-import { NumberValidators } from "./NumberValidators";
-import { transition } from "@angular/animations";
 
-// import { Subscription } from "rxjs";
-
-// import { ErrorService } from "./error.service";
 interface Fees {
   name: string;
   feesvalue: string;
@@ -24,6 +18,7 @@ interface Fees {
 })
 
 export class TransactionCreateComponent implements OnInit, OnDestroy {
+   /*declare variables*/
 
   form: FormGroup;
   isLoading = false;
@@ -36,8 +31,15 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
   constructor(@Inject(MAT_DIALOG_DATA) public data: { missionId: string, transactionId: null }, public missionsService: MissionsService) { }
 
 
-  stringToDate(_date) {
-    var input = new Date(_date).toLocaleString().split(',')[0];
+
+   /*fix date formatter*/
+  stringToDate(_date, skipSplit = false) {
+    var input = null;
+    if (skipSplit) {
+      input = _date;
+    } else {
+      input = new Date(_date).toLocaleString().split(',')[0];
+    }
     var yourdate = input.split("/").reverse();
     var tmp = this.fixDate(yourdate[2]);
     yourdate[2] = this.fixDate(yourdate[1]);
@@ -59,7 +61,7 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
 
       date: new FormControl(null, { validators: [Validators.required] }),
 
-      amount: new FormControl(null, { validators: [Validators.pattern(/^[.\d]+$/), Validators.required] }),
+      amount: new FormControl(null, { validators: [Validators.pattern(/^[.\d]+$/)] }),
 
       feesControl: new FormControl('', { validators: [Validators.required] }),
 
@@ -71,6 +73,7 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
     });
 
     if (Boolean(this.data.transactionId)) {
+         /*dialog is on update mode*/
       this.isLoading = true;
       this.missionsService.getTransaction(this.data.missionId, this.data.transactionId).subscribe(postData => {
         this.isLoading = false;
@@ -84,10 +87,20 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
           //transactionType: postData.transactionType
         });
       });
+    } else {
+      /*dialog is on create mode*/
+      this.form.setValue({
+        date: this.stringToDate(new Date(Date.now()).toLocaleString().split(',')[0], true),
+        label:null,
+        amount:null,
+        image:null,
+        feesControl : null
+      });
     }
   }
 
   onImagePicked(event: Event) {
+    /*each time you select a picture execute this block*/
     const file = (event.target as HTMLInputElement).files[0];
     this.form.patchValue({ image: file });
     this.form.get("image").updateValueAndValidity();
@@ -98,7 +111,7 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
     reader.readAsDataURL(file);
   }
 
-  onSavePost() {
+  onSaveTransaction() {
     if (this.form.invalid) {
       return;
     }
@@ -108,6 +121,7 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
     const transactionId = this.data.transactionId;
 
     if (!Boolean(transactionId)) {
+      /*dialog is on create mode*/
       const myguid = v4();
 
       const transaction: Transaction = {
@@ -131,6 +145,7 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
 
       });
     } else {
+      /*dialog is on update mode*/
       const transaction: Transaction = {
         id: transactionId,
         date: this.form.value.date,

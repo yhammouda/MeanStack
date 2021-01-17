@@ -19,11 +19,54 @@ mat-paginator {
 }
 
 .post-image {
-  height: 100%;
+  height: 8em;
+  width: 11em;
   text-align: center;
+  margin: 1rem 0;
 }
 
 .post-image img {
-  height: 50%;
+  height: 100%;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+
+.add-transaction{
+  width: 100%; text-align: center; margin-bottom: 4em
+}
+
+.add-transaction .content, .status, .amount{
+  float: left; width: 33%
+}
+
+.add-transaction .content .button-right{
+  float: right
+}
+
+.add-transaction .content .button-left{
+  float: left;
+}
+
+.status .text{
+  color: goldenrod; font-size: medium; font-weight: bold
+}
+
+.amount .label{
+  color: mediumpurple; font-size: medium; font-weight: bold
+}
+
+.amount .value{
+  color: blueviolet; font-size: medium; font-weight: bold
+}
+
+.button-warn{
+  color:#ff4081
+}
+
+table{
+  width: 100%;
+}
+
+th{
+  font-weight:800;font-size: medium;
 }

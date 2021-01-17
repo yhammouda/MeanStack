@@ -7,7 +7,7 @@ const User = require("../models/user");
 const router = express.Router();
 
 router.post("/signup", (req, res, next) => {
-  bcrypt.hash(req.body.password, 10).then(hash => {
+  bcrypt.hash(req.body.password, 10).then(hash => { /* bcrypt to save hash the password before saving it */
     const user = new User({
       email: req.body.email,
       firstname: req.body.firstname,
@@ -23,16 +23,16 @@ router.post("/signup", (req, res, next) => {
         });
       })
       .catch(err => {
-        res.status(500).json({
+        res.status(500).json({ /* return invalid credentials*/
           message: "Invalid authentication credentials!"
         });
       });
   });
 });
 
-router.post("/login", (req, res, next) => {
+router.post("/login", (req, res, next) => { /* login api that takes email and password as body paramters*/
   let fetchedUser;
-  User.findOne({ email: req.body.email })
+  User.findOne({ email: req.body.email }) /* find one fetsh on mongo DB */
     .then(user => {
       console.log(user)
       if (!user) {
@@ -49,10 +49,10 @@ router.post("/login", (req, res, next) => {
           message: "Auth failed"
         });
       }
-      const token = jwt.sign(
+      const token = jwt.sign( /* create token */
         { email: fetchedUser.email, userId: fetchedUser._id ,firstname: fetchedUser.firstname,lastname: fetchedUser.lastname },
         "secret_this_should_be_longer",
-        { expiresIn: "1h" }
+        { expiresIn: "1h" } /*  token expire on 3600 seconds */
       );
       res.status(200).json({
         token: token,
@@ -63,7 +63,7 @@ router.post("/login", (req, res, next) => {
       });
     })
     .catch(err => {
-      return res.status(401).json({
+      return res.status(401).json({ /*  returrn 401 unauthorized*/
         message: "Invalid authentication credentials!"
       });
     });

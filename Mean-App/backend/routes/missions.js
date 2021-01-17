@@ -7,7 +7,7 @@ const mission = require("../models/mission");
 
 const router = express.Router();
 
-const MIME_TYPE_MAP = {
+const MIME_TYPE_MAP = { /*supported image types*/
   "image/png": "png",
   "image/jpeg": "jpg",
   "image/jpg": "jpg",
@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
     cb(null, name + "-" + Date.now() + "." + ext);
   },
 });
-
+/*create mission*/
 router.post(
   "",
   checkAuth,
@@ -58,7 +58,7 @@ router.post(
       });
   }
 );
-
+/*fetsh mission*/
 router.get("", checkAuth, (req, res, next) => {
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
@@ -86,6 +86,7 @@ router.get("", checkAuth, (req, res, next) => {
     });
 });
 
+/*add transaction*/
 router.post(
   "/addTransaction",
   checkAuth,
@@ -138,6 +139,7 @@ router.post(
   }
 );
 
+/*update transaction we should pass the missionId and the transaction Id becase the mission contains many transaction in the same Documents*/
 router.put(
   "/:idmission/:idtransaction",
   checkAuth,
@@ -194,7 +196,7 @@ router.put(
     });
   }
 );
-
+/*fetsh transaction*/
 router.get("/:idmission/:idtransaction", checkAuth,(req, res, next) => {
   Mission.findById(req.params.idmission)
     .then(mission => {
@@ -214,7 +216,7 @@ router.get("/:idmission/:idtransaction", checkAuth,(req, res, next) => {
       });
     });
 });
-
+/*delete mission*/
 router.delete("/:idmission",checkAuth, (req, res, next) => {
     Mission.deleteOne({ _id: req.params.idmission, creator: req.userData.userId })
     .then(result => {
@@ -231,7 +233,7 @@ router.delete("/:idmission",checkAuth, (req, res, next) => {
     });
 });
 
-
+/*delete transaction*/
 router.delete("/:idmission/:idtransaction",checkAuth, (req, res, next) => {
     Mission.findById(req.params.idmission)
     .then(mission => {

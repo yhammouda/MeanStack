@@ -9,6 +9,9 @@ const userRoutes = require("./routes/user");
 
 const app = express();
 
+
+/*Mongoose is an Object Data Modeling (ODM) library for MongoDB and Node. js */
+/*Configuration mongoose*/
 mongoose
   .connect(
     "mongodb://root:rootpassword@127.0.0.1:27017"
@@ -22,10 +25,10 @@ mongoose
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use("/images", express.static(path.join("backend/images")));
+app.use("/images", express.static(path.join("backend/images"))); /*map the image directory as store for all images*/
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "*"); /*configure the cross origin to allow the client app to communicate with the backend*/
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
@@ -37,11 +40,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/posts", postsRoutes);
+app.use("/api/posts", postsRoutes); /* all requet that started by /api/posts should be routed tp routes.post.js file*/
 app.use("/api/missions", missionsRoutes);
 app.use("/api/user", userRoutes);
-
-
-
 
 module.exports = app;

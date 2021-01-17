@@ -13,34 +13,8 @@ import { MissionsService } from "../missions.service";
   styleUrls: ["./mission-list.component.css"]
 })
 export class MissionListComponent implements OnInit, OnDestroy {
-  /*missions = [
-   {
-     "id": "xyz-dsdsd",
-     "title": "This is the title",
-     "status": "pending approval",
-     "creator": "1",
-     "transactions": [
-       {
-         "id": "guid-guid",
-         "date": "2019-01-01",
-         "typeOfFees": "Excess transactions",
-         "label": "coffee",
-         "transactionType": "cash",
-         "amount": 20,
-         "imagePath": "http://localhost:3000/images/uuuugfdgdf-1610546324774.jpg"
-       },
-       {
-         "id": "another-guid",
-         "date": "2019-05-05",
-         "typeOfFees": "commissions",
-         "label": "coffee",
-         "transactionType": "cash",
-         "amount": 5,
-         "imagePath": "http://localhost:3000/images/uuuugfdgdf-1610546324774.jpg"
-       }
-     ]
-   }
-  ];*/
+
+  /*declare variables*/
   displayedColumns: string[] = ['label', 'amount', 'typeOfFees', 'date', 'transactionType', 'image', 'edit'];
   missions: Mission[] = [];
   isLoading = false;
