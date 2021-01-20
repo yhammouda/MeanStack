@@ -52,7 +52,6 @@ export class MissionListComponent implements OnInit, OnDestroy {
         this.totalMissions = postData.missionCount;
         this.calculateAmountForMissions(postData.missions);
         this.missions = postData.missions;
-        console.log(this.missions)
       });
     this.userIsAuthenticated = this.authService.getIsAuth();
     this.authStatusSub = this.authService
@@ -109,10 +108,10 @@ export class MissionListComponent implements OnInit, OnDestroy {
   }
 
   onCreateTransaction(missionId: string) {
-    this.dialog.open(TransactionCreateComponent, { data: { missionId: missionId } });
+    this.dialog.open(TransactionCreateComponent, { data: { missionId: missionId} });
   }
-  onUpdateTransaction(missionId: string, transactionId: string) {
-    this.dialog.open(TransactionCreateComponent, { data: { missionId: missionId, transactionId: transactionId } });
+  onUpdateTransaction(missionId: string, transactionId: string,transactionType:string) {
+    this.dialog.open(TransactionCreateComponent, { data: { missionId: missionId, transactionId: transactionId ,transactionType: transactionType} });
   }
 
   ngOnDestroy() {

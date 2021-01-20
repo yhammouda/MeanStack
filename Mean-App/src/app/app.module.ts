@@ -17,6 +17,7 @@ import {
   MatSelectModule
 } from "@angular/material";
 
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { AppComponent } from "./app.component";
 import { PostCreateComponent } from "./posts/post-create/post-create.component";
 import { HeaderComponent } from "./header/header.component";
@@ -61,6 +62,7 @@ import { MissionCreateComponent } from "./missions/mission-create/mission-create
     MatProgressSpinnerModule,
     MatPaginatorModule,
     MatDialogModule,
+    MatSlideToggleModule,
     HttpClientModule
   ],
   providers: [

@@ -16,4 +16,5 @@ export interface Transaction {
   amount: number;
   imagePath: File | string;
   transactionType: string; /*cash or credit or debit*/
+  description:string;
 }

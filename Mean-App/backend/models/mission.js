@@ -9,11 +9,12 @@ const missionSchema = mongoose.Schema({
     {
       id: {type: String, required: true},
       date: {type: Date, required: true},
-      typeOfFees: {type: String, required: true},
-      label: {type: String, required: true},
+      typeOfFees: {type: String, required: false},
+      label: {type: String, required: false},
       amount: {type: Number, required: true},
-      imagePath: {type: String, required: true},
+      imagePath: {type: String, required: false},
       transactionType: {type: String, required: true},
+      description: {type: String, required: false},
     }],
     status: { type: String, required: true }
 });

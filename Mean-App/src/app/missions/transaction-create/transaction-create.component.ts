@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Inject } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { MAT_DIALOG_DATA } from "@angular/material";
+import { MatSlideToggleChange, MAT_DIALOG_DATA } from "@angular/material";
 import { mimeType } from "./mime-type.validator";
 import { Transaction } from "../mission.model";
 import { MissionsService } from "../missions.service";
@@ -18,7 +18,9 @@ interface Fees {
 })
 
 export class TransactionCreateComponent implements OnInit, OnDestroy {
-   /*declare variables*/
+  /*declare variables*/
+  useCredit: boolean = false;
+  displaySlideToggle: boolean = true;
 
   form: FormGroup;
   isLoading = false;
@@ -28,11 +30,11 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
     { name: 'commissions', feesvalue: 'commissions!' },
   ];
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { missionId: string, transactionId: null }, public missionsService: MissionsService) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { missionId: string, transactionId: null, transactionType: null }, public missionsService: MissionsService) { }
 
 
 
-   /*fix date formatter*/
+  /*fix date formatter*/
   stringToDate(_date, skipSplit = false) {
     var input = null;
     if (skipSplit) {
@@ -55,46 +57,43 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.form = new FormGroup({
 
-      label: new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
+    this.manageForm();
 
-      date: new FormControl(null, { validators: [Validators.required] }),
+    if (Boolean(this.data.transactionId)) {/*Update */
 
-      amount: new FormControl(null, { validators: [Validators.pattern(/^[.\d]+$/)] }),
-
-      feesControl: new FormControl('', { validators: [Validators.required] }),
-
-      image: new FormControl(null, {
-        validators: [Validators.required],
-        asyncValidators: [mimeType]
-      })
-
-    });
-
-    if (Boolean(this.data.transactionId)) {
-         /*dialog is on update mode*/
+      /*dialog is on update mode*/
+      this.displaySlideToggle = false;
       this.isLoading = true;
       this.missionsService.getTransaction(this.data.missionId, this.data.transactionId).subscribe(postData => {
         this.isLoading = false;
         let date = this.stringToDate(postData.date);
+
+        if (postData.transactionType == 'Cash') {
+          this.useCredit = false;
+        } else {
+          this.useCredit = true;
+        }
         this.form.setValue({
           date: date,
-          feesControl: this.fees[this.fees.findIndex(x => x.feesvalue === postData.typeOfFees)],
+          feesControl: postData.typeOfFees ? this.fees[this.fees.findIndex(x => x.feesvalue === postData.typeOfFees)] : null,
           label: postData.label,
           amount: postData.amount,
           image: postData.imagePath,
-          //transactionType: postData.transactionType
+          description: postData.description,
+          transactionType: postData.transactionType
         });
       });
     } else {
       /*dialog is on create mode*/
       this.form.setValue({
         date: this.stringToDate(new Date(Date.now()).toLocaleString().split(',')[0], true),
-        label:null,
-        amount:null,
-        image:null,
-        feesControl : null
+        label: null,
+        amount: null,
+        image: null,
+        feesControl: null,
+        description: null,
+        transactionType: null,
       });
     }
   }
@@ -112,6 +111,7 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
   }
 
   onSaveTransaction() {
+
     if (this.form.invalid) {
       return;
     }
@@ -120,23 +120,24 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
     const missionId = this.data.missionId;
     const transactionId = this.data.transactionId;
 
-    if (!Boolean(transactionId)) {
+    if (!Boolean(transactionId)) {  /*Crete mode */
       /*dialog is on create mode*/
       const myguid = v4();
 
       const transaction: Transaction = {
         id: myguid,
         date: this.form.value.date,
-        typeOfFees: this.form.value.feesControl.feesvalue,
+        typeOfFees: this.form.value.feesControl ? this.form.value.feesControl.feesvalue : null,
         label: this.form.value.label,
         amount: this.form.value.amount,
         imagePath: '',
-        transactionType: 'Cash',
+        transactionType: this.useCredit ? 'Credit' : 'Cash',
+        description: this.form.value.description
       };
 
       this.missionsService.addTransaction(
         missionId,
-        this.form.value.image,
+        this.form.value.image ? this.form.value.image : null,
         transaction
       ).subscribe(responseData => {
         this.isLoading = false;
@@ -149,12 +150,15 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
       const transaction: Transaction = {
         id: transactionId,
         date: this.form.value.date,
-        typeOfFees: this.form.value.feesControl.feesvalue,
+        typeOfFees: this.form.value.feesControl ? this.form.value.feesControl.feesvalue : null,
         label: this.form.value.label,
         amount: this.form.value.amount,
         imagePath: this.form.value.image,
-        transactionType: 'Cash',
+        transactionType: this.form.value.transactionType,
+        description: this.form.value.description
       };
+
+
       this.missionsService.updateTransaction(
         missionId, transactionId, transaction
       ).subscribe(responseData => {
@@ -166,7 +170,70 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
     this.form.reset();
   }
 
-  ngOnDestroy() {
-    //this.authStatusSub.unsubscribe();
+  ngOnDestroy() {}
+
+  manageForm() {
+
+    if ((!this.useCredit && this.data.transactionId == null) || (this.data.transactionType == 'Cash' && this.data.transactionId != null)) {
+      this.form = new FormGroup({
+
+        label: new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
+
+        date: new FormControl(null, { validators: [Validators.required] }),
+
+        amount: new FormControl(null, { validators: [Validators.pattern(/^[.\d]+$/)] }),
+
+        feesControl: new FormControl('', { validators: [Validators.required] }),
+
+        description: new FormControl('', { validators: [] }),
+
+        transactionType: new FormControl('', { validators: [] }),
+
+        image: new FormControl(null, {
+          validators: [Validators.required],
+          asyncValidators: [mimeType]
+        })
+      });
+    } else {
+
+      this.form = new FormGroup({
+
+        label: new FormControl(null, { validators: [] }),
+
+        feesControl: new FormControl('', { validators: [] }),
+
+        image: new FormControl(null, { validators: [] }),
+
+        date: new FormControl(null, { validators: [Validators.required] }),
+
+        amount: new FormControl(null, { validators: [Validators.pattern(/^[.\d]+$/)] }),
+
+        description: new FormControl('', { validators: [Validators.required] }),
+
+        transactionType: new FormControl('', { validators: [] }),
+      });
+    }
+  }
+
+
+  toggle(event: MatSlideToggleChange) {
+
+    this.useCredit = event.checked;
+
+    this.manageForm();
+
+    if (Boolean(this.data.transactionId)) {
+    } else {
+      /*dialog is on create mode*/
+      this.form.setValue({
+        date: this.stringToDate(new Date(Date.now()).toLocaleString().split(',')[0], true),
+        label: null,
+        amount: null,
+        image: null,
+        feesControl: null,
+        description: null,
+        transactionType: null,
+      });
+    }
   }
 }

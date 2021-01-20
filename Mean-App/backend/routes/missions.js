@@ -92,9 +92,15 @@ router.post(
   checkAuth,
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
-
+    let imagePath = '';
     const url = req.protocol + "://" + req.get("host");
-    const imagePath = url + "/images/" + req.file.filename;
+
+    if(req.file){ /*Cash Transaction*/
+       imagePath = url + "/images/" + req.file.filename;
+    }else{ /*Credit Card  Transaction*/
+       imagePath  = url + "/images/static/" + "visacard.png";
+      console.log(imagePath)
+    }
 
     Mission.findById(req.body.id).then((mission) => {
       if (mission) {
@@ -112,7 +118,6 @@ router.post(
           creator: req.userData.userId,
           transactions: transactions,
         });
-
         Mission.updateOne(
           { _id: req.body.id, creator: req.userData.userId },
           post
@@ -170,8 +175,10 @@ router.put(
         transactionToUpdate.amount = transaction.amount;
         transactionToUpdate.imagePath = imagePath;
         transactionToUpdate.transactionType = transaction.transactionType;
+        transactionToUpdate.description = transaction.description;
 
         Mission.updateOne({ _id: req.params.idmission, creator: req.userData.userId },mission).then((result) => {
+          console.log(result)
             if (result.nModified > 0) {
               res.status(200).json({ message: "Transaction update successfully!" });
             } else {
