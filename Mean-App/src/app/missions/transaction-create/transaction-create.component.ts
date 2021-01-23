@@ -21,6 +21,7 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
   /*declare variables*/
   useCredit: boolean = false;
   displaySlideToggle: boolean = true;
+  editedMode : boolean = false;
 
   form: FormGroup;
   isLoading = false;
@@ -59,6 +60,7 @@ export class TransactionCreateComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.manageForm();
+    this.editedMode = Boolean(this.data.transactionId) ? true : false;
 
     if (Boolean(this.data.transactionId)) {/*Update */
 

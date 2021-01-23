@@ -1,6 +1,6 @@
 <div>
   <!-- if label and amount exit mean this dialog is opened an update mode-->
-  <h1 mat-dialog-title>{{ !(form.value.label && form.value.amount) ? "ADD new transaction" : "Edit transaction"}}</h1>
+  <h1 mat-dialog-title>{{ (!editedMode )? "ADD new transaction" : "Edit transaction"}}</h1>
 
   <mat-card>
     <mat-slide-toggle *ngIf="displaySlideToggle"  [checked]="useCredit" (change)="toggle($event)">Credit Card!</mat-slide-toggle>
