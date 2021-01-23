@@ -7,6 +7,8 @@ import { Injectable } from "@angular/core";
 
 import { AuthService } from "./auth.service";
 
+
+/*AuthInterceptor is used for each requet that call the API we should send the token in the header request*/
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService) {}

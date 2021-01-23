@@ -5,6 +5,7 @@ import { Subject } from "rxjs";
 
 import { AuthData } from "./auth-data.model";
 
+/*Authentication functionality service*/
 @Injectable({ providedIn: "root" })
 export class AuthService {
   private isAuthenticated = false;
@@ -64,7 +65,7 @@ export class AuthService {
           );
           console.log(expirationDate);
           this.saveAuthData(token, expirationDate, this.userId,response.firstname,response.lastname);
-          this.router.navigate(["/posts"]);
+          this.router.navigate(["/missions"]);
         }
       }, error => {
         this.authStatusListener.next(false);

@@ -3,7 +3,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-const postsRoutes = require("./routes/posts");
 const missionsRoutes = require("./routes/missions");
 const userRoutes = require("./routes/user");
 
@@ -40,8 +39,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/posts", postsRoutes); /* all requet that started by /api/posts should be routed tp routes.post.js file*/
-app.use("/api/missions", missionsRoutes);
+app.use("/api/missions", missionsRoutes);/* all requet that started by /api/missions should be routed tp missions.js file*/
 app.use("/api/user", userRoutes);
 
 module.exports = app;

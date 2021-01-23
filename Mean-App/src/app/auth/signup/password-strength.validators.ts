@@ -1,5 +1,7 @@
 import { AbstractControl, ValidationErrors } from "@angular/forms"
 
+
+/*regex validator for password*/
 export const PasswordStrengthValidator = function (control: AbstractControl): ValidationErrors | null {
   let value: string = control.value || '';
 

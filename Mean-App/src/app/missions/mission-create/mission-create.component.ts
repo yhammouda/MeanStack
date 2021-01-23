@@ -12,27 +12,23 @@ import { MissionsService } from "../missions.service";
   styleUrls: ["./mission-create.component.css"]
 })
 export class MissionCreateComponent implements OnInit, OnDestroy {
-  enteredTitle = "";
-  enteredContent = "";
   isLoading = false;
   form: FormGroup;
   imagePreview: string;
-  private mode = "create";
-  private postId: string;
   private authStatusSub: Subscription;
 
   constructor(
     public missionsService: MissionsService,
     public route: ActivatedRoute,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.authStatusSub = this.authService
-    .getAuthStatusListener()
-    .subscribe(authStatus => {
-      this.isLoading = false;
-    });
+      .getAuthStatusListener()
+      .subscribe(authStatus => {
+        this.isLoading = false;
+      });
 
     this.form = new FormGroup({
       title: new FormControl(null, {
@@ -42,27 +38,15 @@ export class MissionCreateComponent implements OnInit, OnDestroy {
   }
 
 
-  onSavePost() {
+  onSavMission() {
     if (this.form.invalid) {
       return;
     }
     this.isLoading = true;
 
-    if (this.mode === "create") {
-      this.missionsService.addMission(
-        this.form.value.title
-      );
-    } else {
-      /*
-      this.postsService.updatePost(
-        this.postId,
-        this.form.value.title,
-        this.form.value.content,
-        this.form.value.image
-      );
-      */
-    }
-
+    this.missionsService.addMission(
+      this.form.value.title
+    );
     this.form.reset();
   }
 

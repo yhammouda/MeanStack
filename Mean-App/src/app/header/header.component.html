@@ -1,18 +1,10 @@
 <mat-toolbar color="primary">
   <span *ngIf="userIsAuthenticated">
+    <!--Routes tell the Router which view to display when a user clicks a link or pastes a URL into the browser address bar.-->
     <a routerLink="/missions">My Missions</a>
-  </span>
-
-  <span *ngIf="userIsAuthenticated">
-    <a routerLink="/posts">My Posts</a>
   </span>
   <span class="spacer"></span>
   <ul>
-    <li *ngIf="userIsAuthenticated">
-      <a mat-button routerLink="/create" routerLinkActive="mat-accent"
-        >New Post</a
-      >
-    </li>
     <li *ngIf="userIsAuthenticated">
       <a mat-button routerLink="/createmission" routerLinkActive="mat-accent"
         >New Mission</a
