@@ -39,7 +39,7 @@ sudo docker-compose up -d
 ![mainscreen2](https://github.com/yhammouda/MeanStack/blob/main/login.PNG)
 
 # How the application work ? 
-As all application you should **Signup** then **SignIn**.
+As all application you should **SignUp** then **SignIn**.
 
 ## Create Mission:
 ![mainscreen2](https://github.com/yhammouda/MeanStack/blob/main/addnewmission.PNG)
@@ -50,29 +50,6 @@ As all application you should **Signup** then **SignIn**.
 ## List all missions
 ![mainscreen2](https://github.com/yhammouda/MeanStack/blob/main/listmissions.PNG)
 
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/aspnetrun/run-core/tags). 
-
-## Next Releases and RoapMap
-
-For information on upcoming features and fixes, take a look at the [product roadmap](https://github.com/aspnetrun/run-aspnetcore/projects).
-
-## Deployment - AspnetRun Online
-
-This organization page is deployed on Azure. See the project running on Azure in [here](https://aspnetrun.azurewebsites.net/).
-
-## Pull-Request
-
-Please fork this repository, and send me your findings with pull-requests. This is open-source repository so open to contributions.
-Get your item from **missing features** [here from our project page](https://github.com/aspnetrun/run-aspnetcore-realworld/projects/1) and send us your pull requests.
-
 ## Authors
 
-* **Mehmet Ozkaya** - *Initial work* - [mehmetozkaya](https://github.com/mehmetozkaya)
-
-See also the list of [contributors](https://github.com/aspnetrun/run-core/contributors) who participated in this project. Check also [gihtub page of repository.](https://aspnetrun.github.io/run-aspnetcore-angular-realworld/)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+* **Youssef Hammoud** - *Initial work* - [yhammouda](https://github.com/yhammouda/MeanStack/)
