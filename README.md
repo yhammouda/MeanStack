@@ -11,7 +11,7 @@ The MEAN stack is a full-stack, JavaScript-based framework for developing web ap
 ## Run The Project
 You will need the following tools:
 
-* [Visual Code](https://code.visualstudio.com/download/)
+* [Visual Studio Code](https://code.visualstudio.com/download/)
 * [Node js 10.19.0 or later](https://nodejs.org/en/download/)
 * [Angular CLI 11.0.6](https://cli.angular.io/)
 * [Docker](https://docs.docker.com/get-docker/)
@@ -25,11 +25,16 @@ sudo docker-compose up -d
 ```
 3. Wait for docker compose all. That’s it!
 
-4. You can **launch the application** as below url:
+4. At the Mean-App directory which include **package.json** file, run below command to download the dependency(node modules) / run the backend application on port 3000 /run the angular app on port 4200 / :
+* **npm install
+* **npm run start:server -> http://localhost:3000/**
+* **ng serve -> http://localhost:4200/**
+
+5. You can **launch the application** as below url:
 * **Backend Application -> http://localhost:3000/**
 * **Web UI -> http://localhost:4200/**
 
-5. Launch http://localhost:8003/ in your browser to view the Web UI. You can use Web project in order to **call microservices over API Gateway**. When you **checkout the basket** you can follow **queue record on RabbitMQ dashboard**.
+6. Launch http://localhost:8003/ in your browser to view the Web UI.
 
 ![mainscreen2](https://user-images.githubusercontent.com/1147445/81381837-08226000-9116-11ea-9489-82645b8dbfc4.png)
 
