@@ -26,7 +26,7 @@ sudo docker-compose up -d
 3. Wait for docker compose all. That’s it!
 
 4. At the Mean-App directory which include **package.json** file, run below command to download the dependency(node modules) / run the backend application on port 3000 /run the angular app on port 4200 / :
-* **npm install
+* **npm install -> install all dependencies**
 * **npm run start:server -> http://localhost:3000/**
 * **ng serve -> http://localhost:4200/**
 
@@ -34,9 +34,9 @@ sudo docker-compose up -d
 * **Backend Application -> http://localhost:3000/**
 * **Web UI -> http://localhost:4200/**
 
-6. Launch http://localhost:8003/ in your browser to view the Web UI.
+6. Launch http://localhost:4200/ in your browser to view the Web UI.
 
-![mainscreen2](https://user-images.githubusercontent.com/1147445/81381837-08226000-9116-11ea-9489-82645b8dbfc4.png)
+![mainscreen2](https://github.com/yhammouda/MeanStack/blob/main/login.PNG)
 
 ## The Book - Microservices Architecture and Step by Step Implementation on .NET
 
