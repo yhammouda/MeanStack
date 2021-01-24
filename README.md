@@ -50,6 +50,8 @@ As all application you should **SignUp** then **SignIn**.
 ## List all missions
 ![mainscreen2](https://github.com/yhammouda/MeanStack/blob/main/listmissions.PNG)
 
+## Next step you can update delete mission or transaction, and you can use the pagination to dividing the potential result into pages and retrieving the required pages, one by one on demand
+
 ## Authors
 
 * **Youssef Hammoud** - *Initial work* - [yhammouda](https://github.com/yhammouda/MeanStack/)
